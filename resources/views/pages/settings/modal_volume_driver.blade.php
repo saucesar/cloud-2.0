@@ -29,6 +29,7 @@
                         <div class="col-2" id="colBtnRemoveOpt1">
                         </div>
                     </div>
+                    @if(isset($volume_driver['DriverOpts']))
                     @foreach(array_keys($volume_driver['DriverOpts']) as $optKey)
                     <div class="row">
                         <div class="col-5">
@@ -42,6 +43,7 @@
                         </div>
                     </div>
                     @endforeach
+                    @endif
                 </div>
                 <div class="col-2">
                     <button class="btn btn-sm btn-success" id="buttonAddDriverOpt" onclick="addDriverOpt();" type="button">Add</button>
