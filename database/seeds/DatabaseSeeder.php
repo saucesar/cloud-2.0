@@ -12,36 +12,30 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([UserCategorySeeder::class]);
 
-        DB::table('users')->insert([
+        \App\Models\User::create([
             'name' => 'Admin  admin',
             'email' => 'admin@nuvem.com',
             'password' => bcrypt('123456'),
             'phone' => '8799998888',
             'user_type' => 'admin',
             'category_id' => 1,
-            'created_at' => now(),
-            'updated_at' => now(),
         ]);
 
-        DB::table('maquinas')->insert([
+        \App\Models\Maquina::create([
             'cpu_utilizavel' => 30,
             'ram_utilizavel' => 1024,
             'hashcode' => '$2y$10$meLLu4qZwa9GXlGSB9/KLu/KDT.ayLqTAFKbtxP/qQpieyFe2.wUW',
             'user_id' => 1,
             'ip' => '1.1.1.1',
-            'created_at' => now(),
-            'updated_at' => now(),
         ]);
 
-        DB::table('atividade_maquinas')->insert([
+        \App\Models\AtividadeMaquina::create([
             'hashcode_maquina' => '$2y$10$meLLu4qZwa9GXlGSB9/KLu/KDT.ayLqTAFKbtxP/qQpieyFe2.wUW',
             'dataHoraInicio' => now(),
             'last_notification' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
         ]);
 
-        DB::table('images')->insert([
+        \App\Models\Image::create([
             'name' => 'Nginx:latest',
             'description' => 'Nginx (pronounced "engine-x") is an open source
                               reverse proxy server for HTTP, HTTPS, SMTP, POP3, and IMAP
@@ -49,8 +43,16 @@ class DatabaseSeeder extends Seeder
                               server (origin server).',
             'fromImage' => 'nginx',
             'tag' => 'latest',
-            'created_at' => now(),
-            'updated_at' => now(),
+        ]);
+
+        \App\Models\Image::create([
+            'name' => 'Nginx-ssh:latest',
+            'description' => 'Nginx-ssh (pronounced "engine-x") is an open source
+                              reverse proxy server for HTTP, HTTPS, SMTP, POP3, and IMAP
+                              protocols, as well as a load balancer, HTTP cache, and a web
+                              server (origin server). Is include a ssh container access.',
+            'fromImage' => 'saucesar/nginx-ssh',
+            'tag' => 'latest',
         ]);
 
         DB::table('default_templates')->insert([
@@ -126,6 +128,7 @@ class DatabaseSeeder extends Seeder
                 "NetworkMode" => "bridge",
                 "Image" => "IMAGE_NAME",
                 "Env" => [],
+                //"Cmd" => ["/etc/init.d/ssh", "start"],
                 "AttachStdin" =>true,
                 "AttachStdout" => true,
                 "AttachStderr" => true,
@@ -157,11 +160,13 @@ class DatabaseSeeder extends Seeder
                 "Labels"=> [
                     'container.name' => 'CONTAINER_NAME',
                 ],
-                "Driver" => "lvm",
+                "Driver" => "local",
+                "DriverOpts" => [],
+                /*"Driver" => "lvm",
                 "DriverOpts" => [
                     'size' => 'VOLUME_SIZE',
                     'keyfile' => 'PATH_TO_KEY',
-                ],
+                ],*/
             ])
         ]);
 
