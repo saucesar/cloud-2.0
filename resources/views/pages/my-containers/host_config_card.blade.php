@@ -1,4 +1,7 @@
 <div class="card shadow bg-secondary">
+    <div class="card-header">
+        <h2>HostConfig</h2>
+    </div>
     <div class="card-body">
         <p><b> RestartPolicy: </b>{{$details['HostConfig']['RestartPolicy']['Name']}}</p>
         <p>

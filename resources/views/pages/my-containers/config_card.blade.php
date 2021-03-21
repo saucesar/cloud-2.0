@@ -1,4 +1,7 @@
 <div class="card shadow bg-secondary">
+    <div class="card-header">
+        <h2>Config</h2>
+    </div>
     <div class="card-body">
         <p><b>Hostname: </b>{{ $details['Config']['Hostname'] }}</p>
         <p><b>Domainname: </b>{{ $details['Config']['Domainname'] }}</p>

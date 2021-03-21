@@ -1,4 +1,7 @@
 <div class="card shadow bg-secondary">
+    <div class="card-header">
+        <h2>Status</h2>
+    </div>
     <div class="card-body">
         <p><b>Status: </b>{{ $details['State']['Status'] }}</p>
         <p><b>Error: </b>{{ $details['State']['Error'] }}</p>

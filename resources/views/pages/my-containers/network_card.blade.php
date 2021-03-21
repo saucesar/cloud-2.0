@@ -1,5 +1,5 @@
 <div class="card shadow bg-secondary">
-    <div class="card-header ">
+    <div class="card-header">
         <h2>Network</h2>
     </div>
     <div class="card-body">
