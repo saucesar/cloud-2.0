@@ -53,7 +53,7 @@
                         <i class=" material-icons">get_app</i>
                     </a>
                     <a href="{{$dockerHost}}/containers/{{$container->docker_id}}/logs?timestamps=1&stdout=1&stderr=1"
-                        class="btn btn-info btn-link" target="_black" title="Logs.">
+                        class="btn btn-info btn-link" target="_blank" title="Logs.">
                         <i class="fas fa-file-alt"></i>
                     </a>
                     <a href="{{ route('containers.show' , [$container->docker_id]) }}" class="btn btn-link"
