@@ -5,7 +5,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
-                <div class="card">
+                <div class="card shadow">
                     <div class="card-header card-header-primary">
                         <h4 class="card-title ">Container Details</h4>
                         <p class="card-category"> {{ $mycontainer->nickname }}</p>
@@ -39,9 +39,8 @@
                     </div>
                     <div class="card-body">
                         <h4 class="card-title ">Details of {{ $mycontainer->nickname }}</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
+                        <br>
+                        <div class="">
                             @if($details)
                             <nav>
                                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -49,6 +48,7 @@
                                     <a class="nav-item nav-link" id="nav-host-config-tab" data-toggle="tab" href="#nav-host-config" role="tab" aria-controls="nav-host-config" aria-selected="false">Host Config</a>
                                     <a class="nav-item nav-link" id="nav-config-tab" data-toggle="tab" href="#nav-config" role="tab" aria-controls="nav-config" aria-selected="false">Config</a>
                                     <a class="nav-item nav-link" id="nav-network-tab" data-toggle="tab" href="#nav-network" role="tab" aria-controls="nav-network" aria-selected="false">Network</a>
+                                    <a class="nav-item nav-link" id="nav-info-tab" data-toggle="tab" href="#nav-info" role="tab" aria-controls="nav-info" aria-selected="false">Info</a>
                                 </div>
                             </nav>
                             <div class="tab-content" id="nav-tabContent">
@@ -63,6 +63,9 @@
                                 </div>
                                 <div class="tab-pane" id="nav-network" role="tabpanel" aria-labelledby="nav-network-tab">
                                     @include('pages.my-containers.network_card')
+                                </div>
+                                <div class="tab-pane" id="nav-info" role="tabpanel" aria-labelledby="nav-info-tab">
+                                    @include('pages.my-containers.info_card')
                                 </div>
                             </div>
                             @else
