@@ -7,7 +7,7 @@
             <li>To enable access via SSH open the <b>terminal</b> in the container and run <b>"service ssh start"</b></li>
             <li>
                 After enabling SSH, access with the command
-                <b>ssh root@container_id
+                <b>ssh root{{ '@' }}{{ $_SERVER['SERVER_NAME'] }}
                 @if(isset($details['NetworkSettings']['Ports']))
                     @foreach($details['NetworkSettings']['Ports'] as $key => $portNumber)
                         @if($key == "22/tcp")
