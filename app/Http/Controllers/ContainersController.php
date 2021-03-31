@@ -271,7 +271,7 @@ class ContainersController extends Controller
         $template['HostConfig']['PublishAllPorts'] = isset($request->PublishAllPorts);
         $template['HostConfig']['Privileged'] = isset($request->Privileged);
         $template['NetworkMode'] = $request->NetworkMode;
-        $template['Entrypoint'] = [$request->Entrypoint];
+        //$template['Entrypoint'] = [$request->Entrypoint];
         $template['HostConfig']['RestartPolicy']['name'] = $request->RestartPolicy;
         //$template['HostConfig']['Binds'] = $this->extractArray($request->BindSrc, $request->BindDest, ':');
         $template['HostConfig']['NetworkMode'] = $request->NetworkMode;

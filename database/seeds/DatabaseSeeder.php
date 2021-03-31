@@ -128,16 +128,14 @@ class DatabaseSeeder extends Seeder
                 "NetworkMode" => "bridge",
                 "Image" => "IMAGE_NAME",
                 "Env" => [],
-                //"Cmd" => ["/etc/init.d/ssh", "start"],
+                //"Cmd" => "/etc/init.d/ssh start && bash",
                 "AttachStdin" =>true,
                 "AttachStdout" => true,
                 "AttachStderr" => true,
                 "OpenStdin" => true,
                 "StdinOnce" => false,
                 "Tty" =>true,
-                "Entrypoint"=> [
-                    "/bin/bash",
-                ],
+                //"Entrypoint"=> ["/bin/bash",],
                 "HostConfig" => [
                     "PublishAllPorts" => true,
                     "Privileged" => true,

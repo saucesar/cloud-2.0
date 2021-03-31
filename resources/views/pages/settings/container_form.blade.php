@@ -311,12 +311,14 @@ setInterval(checkLabels, 100);
 </div>
 <div class="row">
     <div class="col-5">
+    @if(isset($container_template['Entrypoint']))
         <div class="row">
             <div class="col-10">
                 <input type="text" name="Entrypoint" class="form-control" value="{{ implode(';', $container_template['Entrypoint']) }}">
             </div>
             <div class="col-2" id="colBtnRemoveEntryPoint1"></div>
         </div>
+    @endif
     </div>
     <div class="col-5">
         <select name="RestartPolicy" class="form-control">
