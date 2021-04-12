@@ -2,82 +2,12 @@
     <div class="row">
         <div class="col-10">
             <label for="Domainname">Domainname</label>
-            <input type="text" name="Domainname" value="{{ old('Domainname') ?? $container_template['Domainname'] }}" class="form-control">
+            <input type="text" name="Domainname" value="{{ old('Domainname') ?? $container_template['Domainname'] }}"
+                class="form-control">
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <h3>Labels</h3>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-5">
-            <label for="LabelKeys[]">KEY</label>
-        </div>
-        <div class="col-5">
-            <label for="">VALUE</label>
-        </div>
-        <div class="col-2">
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-10" id="labels">
-            <div class="row">
-                <div class="col-5">
-                    <input type="text" name="LabelKeys[]" class="form-control">
-                </div>
-                <div class="col-5" id="label-values">
-                    <div class="row">
-                        <div class="col-10">
-                            <input type="text" name="LabelValues[]" class="form-control">
-                        </div>
-                        <div class="col-2" id="colBtnRemoveLabel1"></div>
-                    </div>
-                </div>
-            </div>
-            @php( $labelKeys = array_keys($container_template['Labels']) )
-            @for($i = 0; $i < count($container_template['Labels']); $i++) <div class="row">
-                <div class="col-5">
-                    <input type="text" name="LabelKeys[]" value="{{ $labelKeys[$i] }}" class="form-control">
-                </div>
-                <div class="col-5" id="label-values">
-                    <div class="row">
-                        <div class="col-10">
-                            <input type="text" name="LabelValues[]" class="form-control" value="{{ $container_template['Labels'][$labelKeys[$i]] }}">
-                        </div>
-                        <div class="col-2">
-                            <button type="button" class="btn btn-sm btn-link btn-danger" title="Delete the label" onclick="deleteElement(this, 4);">X</button>
-                        </div>
-                    </div>
-                </div>
-        </div>
-        @endfor
-    </div>
-    <div class="col-2">
-        <button type="button" class="btn btn-sm btn-success" id="buttonAddLabel" onclick="addLabel()">Add</button>
-    </div>
+    @include('pages.components.input_labels')
 </div>
-<script type="text/javascript">
-var countLabel = 1;
-
-function addLabel() {
-    var field = '<div class="row"><div class="col-5"><input type="text" name="LabelKeys[]" class="form-control">';
-    field += '</div><div class="col-5" id="label-values"><div class="row"><div class="col-10">';
-    field += '<input type="text" name="LabelValues[]"class="form-control">';
-    field += '</div><div class="col-2" id="colBtnRemoveLabel' + (++countLabel) + '"></div></div></div></div>';
-    addAtFirst("#labels", field);
-    addAtFirst("#colBtnRemoveLabel" + (countLabel - 1),
-        '<button type="button" class="btn btn-sm btn-link btn-danger" title="Delete the label"onclick="deleteElement(this, 4);">X</button>'
-        );
-}
-
-function checkLabels() {
-    var button = document.getElementById('buttonAddLabel');
-    button.disabled = !(checkInputArray("LabelKeys[]") && checkInputArray("LabelValues[]"));
-}
-
-setInterval(checkLabels, 100);
-</script>
 
 <div class="row">
     <div class="col">
@@ -88,18 +18,21 @@ setInterval(checkLabels, 100);
     <div class="col-2">
         <label for="NetworkMode">NetworkMode</label>
         <select name="NetworkMode" class="form-control">
-            <option value="bridge" {{ $container_template['NetworkMode'] == 'bridge' ? 'selected' : '' }}>Bridge</option>
+            <option value="bridge" {{ $container_template['NetworkMode'] == 'bridge' ? 'selected' : '' }}>Bridge
+            </option>
             <option value="host" {{ $container_template['NetworkMode'] == 'host' ? 'selected' : '' }}>Host</option>
             <option value="none" {{ $container_template['NetworkMode'] == 'none' ? 'selected' : '' }}>None</option>
         </select>
     </div>
     <div class="col-4">
         <label for="IPAddress">IP Address</label>
-        <input type="text" name="IPAddress" value="{{ old('IPAddress') ?? $container_template['IPAddress'] }}"class="form-control">
+        <input type="text" name="IPAddress" value="{{ old('IPAddress') ?? $container_template['IPAddress'] }}"
+            class="form-control">
     </div>
     <div class="col-4">
         <label for="IPPrefixLen">IP Prefix Len</label>
-        <input type="text" name="IPPrefixLen" value="{{ old('IPPrefixLen') ?? $container_template['IPPrefixLen'] }}"class="form-control">
+        <input type="text" name="IPPrefixLen" value="{{ old('IPPrefixLen') ?? $container_template['IPPrefixLen'] }}"
+            class="form-control">
     </div>
 </div>
 <br>
@@ -153,7 +86,7 @@ setInterval(checkLabels, 100);
         addAtFirst("#dnsOpt-values", field);
         addAtFirst("#colBtnRemoveDnsOpt" + (countDnsOpt - 1),
             '<button type="button" class="btn btn-sm btn-link btn-danger"onclick="deleteElement(this, 2);">X</button>'
-            );
+        );
     }
 
     function checkDnsOpt() {
@@ -164,72 +97,7 @@ setInterval(checkLabels, 100);
     setInterval(checkDnsOpt, 100);
     </script>
 </div>
-<div class="row">
-    <div class="col">
-        <h3>Env Variables</h3>
-    </div>
-</div>
-<div class="row">
-    <div class="col-5">
-        <label for="EnvKeys[]">KEY</label>
-    </div>
-    <div class="col-5">
-        <label for="EnvValues[]">VALUE</label>
-    </div>
-    <div class="col-2">
-    </div>
-</div>
-<div class="row">
-    <div class="col-10" id="colEnv">
-        <div class="row">
-            <div class="col-5">
-                <input type="text" name="EnvKeys[]" class="form-control">
-            </div>
-            <div class="col-5">
-                <input type="text" name="EnvValues[]" class="form-control">
-            </div>
-            <div class="col-2" id="colBtnRemoveEnv1">
-            </div>
-        </div>
-        @foreach($container_template['Env'] as $env)
-        <div class="row">
-            <div class="col-5">
-                <input type="text" name="EnvKeys[]" class="form-control" value="{{ explode('=', $env)[0] }}">
-            </div>
-            <div class="col-5">
-                <input type="text" name="EnvValues[]" class="form-control" value="{{ explode('=', $env)[1] }}">
-            </div>
-            <div class="col-2">
-                <button type="button" class="btn btn-sm btn-link btn-danger"
-                    onclick='deleteElement(this, 2);'>X</button>
-            </div>
-        </div>
-        @endforeach
-    </div>
-    <div class="col-2">
-        <button class="btn btn-sm btn-success" id="buttonAddEnv" onclick="addEnv();" type="button">Add</button>
-    </div>
-    <script type="text/javascript">
-    var countEnv = 1;
-
-    function addEnv() {
-        var field = '<div class="row"><div class="col-5"><input type="text" name="EnvKeys[]" class="form-control">';
-        field += '</div><div class="col-5"><input type="text" name="EnvValues[]" class="form-control"></div>';
-        field += '<div class="col-2" id="colBtnRemoveEnv' + (++countEnv) + '"></div></div>';
-        addAtFirst("#colEnv", field);
-        addAtFirst("#colBtnRemoveEnv" + (countEnv - 1),
-            '<button type="button" class="btn btn-sm btn-link btn-danger" onclick="deleteElement(this, 2);">X</button>'
-            );
-    }
-
-    function checkEnvs() {
-        var button = document.getElementById('buttonAddEnv');
-        button.disabled = !(checkInputArray("EnvKeys[]") && checkInputArray("EnvValues[]"));
-    }
-
-    setInterval(checkEnvs, 100);
-    </script>
-</div>
+@include('pages.components.input_env')
 <div class="row">
     <div class="col">
         <h3>Resources</h3>
@@ -253,7 +121,7 @@ setInterval(checkLabels, 100);
         <select name="volume" class="form-control" required>
             <option value="new">Create new volume</option>
             @foreach($volumes as $volume)
-                <option value="{{ $volume->name }}">{{ $volume->name }}</option>
+            <option value="{{ $volume->name }}">{{ $volume->name }}</option>
             @endforeach
         </select>
         @endif
@@ -311,14 +179,15 @@ setInterval(checkLabels, 100);
 </div>
 <div class="row">
     <div class="col-5">
-    @if(isset($container_template['Entrypoint']))
+        @if(isset($container_template['Entrypoint']))
         <div class="row">
             <div class="col-10">
-                <input type="text" name="Entrypoint" class="form-control" value="{{ implode(';', $container_template['Entrypoint']) }}">
+                <input type="text" name="Entrypoint" class="form-control"
+                    value="{{ implode(';', $container_template['Entrypoint']) }}">
             </div>
             <div class="col-2" id="colBtnRemoveEntryPoint1"></div>
         </div>
-    @endif
+        @endif
     </div>
     <div class="col-5">
         <select name="RestartPolicy" class="form-control">
