@@ -252,7 +252,6 @@ class ContainersController extends Controller
         $template['Image'] = Image::find($request->image_id)->fromImage;
         $template['user_id'] = Auth::user()->id;
 
-        $template['Env'] = $this->extractArray($request->EnvKeys, $request->EnvValues, '=', true);
         $template['HostConfig']['Memory'] = Auth::user()->category->ram_limit * 1024 * 1024;//Converte de MB para bytes
 
         $template['Domainname'] = str_replace(' ', '', $request->Domainname);
