@@ -25,7 +25,7 @@
             <div class="col-2" id="colBtnRemoveEnv1">
             </div>
         </div>
-        @foreach($container_template['Env'] as $env)
+        @foreach($envVariables as $env)
         <div class="row">
             <div class="col-5">
                 <input type="text" name="EnvKeys[]" class="form-control" value="{{ explode('=', $env)[0] }}">

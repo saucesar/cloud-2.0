@@ -28,8 +28,8 @@
                 </div>
             </div>
         </div>
-        @php( $labelKeys = array_keys($container_template['Labels']) )
-        @for($i = 0; $i < count($container_template['Labels']); $i++) <div class="row">
+        @php( $labelKeys = array_keys($labels) )
+        @for($i = 0; $i < count($labels); $i++) <div class="row">
             <div class="col-5">
                 <input type="text" name="LabelKeys[]" value="{{ $labelKeys[$i] }}" class="form-control">
             </div>
@@ -37,7 +37,7 @@
                 <div class="row">
                     <div class="col-10">
                         <input type="text" name="LabelValues[]" class="form-control"
-                            value="{{ $container_template['Labels'][$labelKeys[$i]] }}">
+                            value="{{ $labels[$labelKeys[$i]] }}">
                     </div>
                     <div class="col-2">
                         <button type="button" class="btn btn-sm btn-link btn-danger" title="Delete the label"
