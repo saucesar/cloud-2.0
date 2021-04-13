@@ -6,7 +6,7 @@
                 class="form-control">
         </div>
     </div>
-    @include('pages.components.input_labels')
+    @include('pages.components.input_labels', ['labels' => $container_template['Labels']])
 </div>
 
 <div class="row">
@@ -97,7 +97,7 @@
     setInterval(checkDnsOpt, 100);
     </script>
 </div>
-@include('pages.components.input_env')
+@include('pages.components.input_env', ['envVariables' => $container_template['Env']])
 <div class="row">
     <div class="col">
         <h3>Resources</h3>

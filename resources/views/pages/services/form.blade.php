@@ -4,7 +4,12 @@
         <label for="serviceName">Service Name</label>
         <input type="text" name="serviceName" class="form-control" value="{{ old('serviceName') ?? $service['Spec']['Name'] ?? '' }}" />
         <label for="imageName">Image Name</label>
-        <input type="text" name="imageName" class="form-control"value="{{ old('imageName') ?? $service['Spec']['TaskTemplate']['ContainerSpec']['Image'] ?? '' }}" />
+        <select name="imageName" class="form-control" required>
+            <option value="">Select de Image</option>
+            @foreach($images as $image)
+            <option value="{{ $image->fromImage }}:{{ $image->tag }}">{{ $image->name }}</option>
+            @endforeach
+        </select>
 </fieldset>
 </div>
 
@@ -13,12 +18,18 @@
     <div class="form-card">
         <h2 class="fs-title">Task Template</h2>
         <h4 class="">Container Spec</h4>
-        <label for="env">Environment Variables </label>
-        <textarea name="env" cols="30" rows="4" class="form-control"
-            placeholder="(Optional)A list of environment variables in the form VAR=value;VAR2=value2">{{isset($service) ? implode(';', $service['Spec']['TaskTemplate']['ContainerSpec']['Env']) : old('env') }}</textarea>
-        <label for="labels">Labels</label>
-        <textarea name="labels" cols="30" rows="4" class="form-control"
-            placeholder="(Optional)Labels to the service. Ex: L1:VALUE1;L2:VALUE2">{{ old('labels') ?? isset($service) ? implode(';', $service['Spec']['Labels']) : '' }}</textarea>
+        <div class="">
+            @include('pages.components.input_env', ['envVariables' => []])
+        </div>
+    </div>
+</fieldset>
+</div>
+<div class="tab">
+<fieldset>
+    <div class="form-card">
+        <h2 class="fs-title">Task Template</h2>
+        <h4 class="">Container Spec</h4>
+        @include('pages.components.input_labels', ['labels' => []])
     </div>
 </fieldset>
 </div>
@@ -82,4 +93,9 @@
   <span class="step"></span>
   <span class="step"></span>
   <span class="step"></span>
+  <span class="step"></span>
 </div>
+
+@push('js')
+<script src="{{ asset('js') }}/cloud.js"></script>
+@endpush

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\traits\ArrayTrait;
+use App\Models\Image;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -10,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 
 class ServiceController extends Controller
 {
+    use ArrayTrait;
+
     public function index()
     {
         $url = env('DOCKER_HOST');
@@ -35,7 +39,10 @@ class ServiceController extends Controller
 
     public function create()
     {
-        return view('pages/services/create');
+        $data = [
+            'images' => Image::all(),
+        ];
+        return view('pages/services/create', $data);
     }
 
     public function store(Request $request)
@@ -74,7 +81,9 @@ class ServiceController extends Controller
         $service_template['UpdateConfig']['MaxFailureRatio'] = intval($request->maxFailureRatio);
         $service_template['UpdateConfig']['Order'] = $request->updateOrder;
         $service_template['Name'] = str_replace(' ', '', $request->serviceName);
-        $service_template['Env'] = isset($request->env) ? explode(';', $request->env) : [];
+        $service_template['Env'] = $this->extractArray($request->EnvKeys, $request->EnvValues, '=',true);
+        $service_template['Labels'] = $this->extractLabels($request);
+
         $service_template['EndpointSpec']['Ports'] = [
             [
                 'Protocol' => $request->portProtocol,
@@ -83,7 +92,6 @@ class ServiceController extends Controller
             ],
         ];
 
-        $service_template['Labels'] = $this->getLabels($request->labels);
         return $service_template;
     }
 
