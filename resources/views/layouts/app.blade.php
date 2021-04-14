@@ -35,7 +35,7 @@
 
     <script src="{{ asset('xterm-addon-web-links') }}/lib/xterm-addon-web-links.js"></script>
     <script src="{{ asset('xterm-addon-web-links') }}/out/WebLinksAddon.js"></script>
-
+    @stack('head_scripts')
     </head>
     <body class="{{ $class ?? '' }}">
         @auth()
