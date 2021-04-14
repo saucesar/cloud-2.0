@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\traits\ArrayTrait;
+use App\Http\Requests\Container\StoreContainer;
 use App\Models\Volume;
 
 class ContainersController extends Controller
@@ -123,7 +124,7 @@ class ContainersController extends Controller
         return view('pages/my-containers/containers_config', $params);
     }
 
-    public function store(Request $request)
+    public function store(StoreContainer $request)
     {
         try{
             $url = env('DOCKER_HOST');
