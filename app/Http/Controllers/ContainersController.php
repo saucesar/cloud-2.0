@@ -127,7 +127,6 @@ class ContainersController extends Controller
     {
         try{
             $url = env('DOCKER_HOST');
-                
             $data = $this->setDefaultDockerParams($request);
             $volume_name = $data['nickname'].'-volume';
             $volume = Volume::firstWhere('name', $volume_name);
@@ -139,7 +138,7 @@ class ContainersController extends Controller
 
                 if($create_volume->getStatusCode() == 201){
                     Volume::create(['user_id' => $user->id, 'name' => $volume_name]);
-    
+                    
                     return $this->proceedCreation($data, $url, $volume_name, $request->storage_path);
                 } else {
                     return back()->withInput()->with('error', $create_volume->json()['message']);
@@ -270,7 +269,8 @@ class ContainersController extends Controller
         $template['HostConfig']['PublishAllPorts'] = isset($request->PublishAllPorts);
         $template['HostConfig']['Privileged'] = isset($request->Privileged);
         $template['NetworkMode'] = $request->NetworkMode;
-        //$template['Entrypoint'] = [$request->Entrypoint];
+        //$template['Entrypoint'] = "/docker-entrypoint.sh";
+        $template['Cmd'] = ["/usr/sbin/sshd", "-D"];
         $template['HostConfig']['RestartPolicy']['name'] = $request->RestartPolicy;
         //$template['HostConfig']['Binds'] = $this->extractArray($request->BindSrc, $request->BindDest, ':');
         $template['HostConfig']['NetworkMode'] = $request->NetworkMode;
