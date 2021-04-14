@@ -29,9 +29,11 @@
         <p><b>WorkingDir: </b>{{ $details['Config']['WorkingDir'] }}</p>
         <p>
             <b>Entrypoint:</b><br>
+            @if(isset($details['Config']['Entrypoint']))
             @foreach($details['Config']['Entrypoint'] as $entry)
             {{$entry}} <br>
             @endforeach
+            @endif
         </p>
         <p>
             <b>Labels:</b><br>
