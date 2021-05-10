@@ -271,7 +271,8 @@ class ContainersController extends Controller
         $template['HostConfig']['Privileged'] = isset($request->Privileged);
         $template['NetworkMode'] = $request->NetworkMode;
         //$template['Entrypoint'] = "/docker-entrypoint.sh";
-        $template['Cmd'] = ["/usr/sbin/sshd", "-D"];
+        //$template['Cmd'] = ["/usr/sbin/sshd", "-D"];
+        $template['Cmd'] = ['/bin/bash'];
         $template['HostConfig']['RestartPolicy']['name'] = $request->RestartPolicy;
         //$template['HostConfig']['Binds'] = $this->extractArray($request->BindSrc, $request->BindDest, ':');
         $template['HostConfig']['NetworkMode'] = $request->NetworkMode;
