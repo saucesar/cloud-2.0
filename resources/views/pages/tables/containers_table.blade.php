@@ -9,6 +9,9 @@
         <th>Iniciated at</th>
         <th>Running</th>
         <th>Options</th>
+        <th>
+            Git <i class="fab fa-git-alt"></i>
+        </th>
     </thead>
     <tbody>
         @foreach ($mycontainers as $container)
@@ -64,12 +67,44 @@
                         title="Edit nickname.">
                         <i class="material-icons">edit</i>
                     </a>
-                    <button class="btn btn-danger btn-link" data-toggle="modal" data-target="#modalDeleteContainer{{ $container->docker_id }}"
-                        title="Delete a containers">
+                    <button class="btn btn-danger btn-link" data-toggle="modal"
+                        data-target="#modalDeleteContainer{{ $container->docker_id }}" title="Delete a containers">
                         <i class="material-icons">delete</i>
                     </button>
+                
+                    <script type="text/javascript">
+                        const wsHost = "<?= $dockerWsHost; ?>";
+                        const containerId = "<?= $container->docker_id; ?>";
+                        const endpoint = "/attach/ws?logs=0&stream=1&stdin=1&stdout=1&stderr=1";
+                        const url = wsHost + '/containers/' + containerId + endpoint;
+
+                        const path = "<?= $container->git_path; ?>";
+
+                        const socket = new WebSocket(url);
+                        socket.onmessage = function(e) {
+                            alert(e.data);
+                        };
+
+                        function gitPull() {
+                            socket.send("cd " + path + " && git pull \n")
+                        }
+
+                        function gitReset() {
+                            socket.send("cd " + path + " && git reset --keep HEAD@{1} \n")
+                        }
+                    </script>
                     @include('pages/my-containers/modal_delete_container')
                 </div>
+            </td>
+            <td class="td-actions text-left">
+                <button class="btn btn-info btn-link" type="button" onclick="gitPull();"
+                        title="{{ isset($container->git_path ) ?'Git pull.' : 'To enable set git project path' }}" {{ isset($container->git_path ) ? : 'disabled' }}>
+                    <i class="fas fa-sync"></i>
+                </button>
+                <button class="btn btn-info btn-link" type="button" onclick="gitPull();"
+                        title="{{ isset($container->git_path ) ?'Git pull.' : 'To enable set git project path' }}" {{ isset($container->git_path ) ? : 'disabled' }}>
+                    <i class="fas fa-undo-alt"></i>
+                </button>
             </td>
         </tr>
         @endforeach
