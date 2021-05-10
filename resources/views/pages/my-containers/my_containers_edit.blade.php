@@ -20,7 +20,11 @@
                             <div class="row">
                                 <div class="col-sm-10">
                                     {!! Form::open(['route' => ['containers.update', $container->docker_id], 'method' => 'put']) !!}
+                                        <label for="nickname">Nickname</label>
                                         {!! Form::text('nickname',$container->nickname, ['class'=>"form-control", 'placeholder' =>"Nickname to container", 'required'=>"true"]) !!}
+                                        <br>
+                                        <label for="git_path">Git project path</label>
+                                        <input class="form-control" type="text" name="git_path" placeholder="project path" value="{{ $container->git_path }}">
                                         <br>
                                         <div class="row">
                                             <div class="col-sm">
