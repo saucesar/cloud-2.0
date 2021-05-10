@@ -66,6 +66,7 @@ class ContainersController extends Controller
             'images' => Image::all(),
             'container_template' => json_decode(DB::table('default_templates')->where('name', 'container')->first()->template, true),
             'volumes' => Volume::where('user_id', $user->id)->get(),
+            'dockerWsHost' => env('DOCKER_HOST_WS'),
         ];
 
         return view('pages/my-containers/my_containers', $params);
