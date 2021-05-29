@@ -23,8 +23,8 @@
                                         <label for="nickname">Nickname</label>
                                         {!! Form::text('nickname',$container->nickname, ['class'=>"form-control", 'placeholder' =>"Nickname to container", 'required'=>"true"]) !!}
                                         <br>
-                                        <label for="git_path">Git project path</label>
-                                        <input class="form-control" type="text" name="git_path" placeholder="project path" value="{{ $container->git_path }}">
+                                        <label for="gitrep">Github project URL</label>
+                                        <input class="form-control" type="text" name="gitrep" placeholder="project path" value="{{ $container->gitrep }}">
                                         <br>
                                         <div class="row">
                                             <div class="col-sm">
