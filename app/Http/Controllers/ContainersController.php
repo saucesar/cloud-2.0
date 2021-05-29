@@ -130,6 +130,8 @@ class ContainersController extends Controller
         try{
             $url = env('DOCKER_HOST');
             $data = $this->setDefaultDockerParams($request);
+            $data['gitrep'] = $request->gitrep;
+            
             $volume_name = $data['nickname'].'-volume';
             $volume = Volume::firstWhere('name', $volume_name);
             
@@ -273,7 +275,7 @@ class ContainersController extends Controller
         $template['NetworkMode'] = $request->NetworkMode;
         //$template['Entrypoint'] = "/docker-entrypoint.sh";
         //$template['Cmd'] = ["/usr/sbin/sshd", "-D"];
-        $template['Cmd'] = ['/bin/bash'];
+        //$template['Cmd'] = ['/bin/bash'];
         $template['HostConfig']['RestartPolicy']['name'] = $request->RestartPolicy;
         //$template['HostConfig']['Binds'] = $this->extractArray($request->BindSrc, $request->BindDest, ':');
         $template['HostConfig']['NetworkMode'] = $request->NetworkMode;
