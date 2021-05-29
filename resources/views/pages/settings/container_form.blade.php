@@ -1,14 +1,19 @@
 <div class="text-left">
     <div class="row">
-        <div class="col-10">
+        <div class="col">
             <label for="Domainname">Domainname</label>
             <input type="text" name="Domainname" value="{{ old('Domainname') ?? $container_template['Domainname'] }}"
                 class="form-control">
         </div>
+        <div class="col">
+            <label for="Domainname">Github (Must be public)</label>
+            <input class="form-control" type="text" name="gitrep" placeholder="Github repository URL" value="">
+        
+        </div>
     </div>
     @include('pages.components.input_labels', ['labels' => $container_template['Labels']])
 </div>
-
+<!--
 <div class="row">
     <div class="col">
         <h3>Network</h3>
@@ -96,7 +101,7 @@
 
     setInterval(checkDnsOpt, 100);
     </script>
-</div>
+</div>-->
 @include('pages.components.input_env', ['envVariables' => $container_template['Env']])
 <div class="row">
     <div class="col">
@@ -168,16 +173,16 @@
     </div>
     <div class="col"></div>
 </div>
-<div class="row">
+<div class="row"><!--
     <div class="col-5">
         <h3>Entrypoint</h3>
-    </div>
+    </div>-->
     <div class="col-2"></div>
     <div class="col-5">
         <h3>RestartPolicy</h3>
     </div>
 </div>
-<div class="row">
+<div class="row"><!--
     <div class="col-5">
         @if(isset($container_template['Entrypoint']))
         <div class="row">
@@ -188,7 +193,7 @@
             <div class="col-2" id="colBtnRemoveEntryPoint1"></div>
         </div>
         @endif
-    </div>
+    </div>-->
     <div class="col-5">
         <select name="RestartPolicy" class="form-control">
             <option value="" {{  $container_template['HostConfig']['RestartPolicy']['name'] == '' ? 'selected' : '' }}>
