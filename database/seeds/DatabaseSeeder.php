@@ -55,6 +55,15 @@ class DatabaseSeeder extends Seeder
             'tag' => 'latest',
         ]);
 
+        \App\Models\Image::create([
+            'name' => 'Apache-PHP:latest',
+            'description' => 'server for HTTP, HTTPS, SMTP, POP3, and IMAP
+                              protocols, as well as a load balancer, HTTP cache, and a web
+                              server (origin server).',
+            'fromImage' => 'saucesar/apache',
+            'tag' => 'latest',
+        ]);
+
         DB::table('default_templates')->insert([
             'name' => 'service',
             'template' => json_encode([
