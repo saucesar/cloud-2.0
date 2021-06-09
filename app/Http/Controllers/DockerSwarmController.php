@@ -9,17 +9,21 @@ class DockerSwarmController extends Controller
 {
     public function index()
     {
-        $url = env('DOCKER_HOST');
-        $swarm = Http::get("$url/swarm");
-        $nodes = Http::get("$url/nodes");
+        try{
+            $url = env('DOCKER_HOST');
+            $swarm = Http::get("$url/swarm");
+            $nodes = Http::get("$url/nodes");
 
-        $params = [
-            'swarm' => $swarm->getStatusCode() == 200 ? $swarm->json() : [],
-            'manager' => $this->getSwarmManager($nodes),
-            'error' => $swarm->getStatusCode() != 200 ? ($swarm->json())['message'] : null,
-        ];
-        
-        return view('pages/docker-swarm/index', $params);
+            $params = [
+                'swarm' => $swarm->getStatusCode() == 200 ? $swarm->json() : [],
+                'manager' => $this->getSwarmManager($nodes),
+                'error' => $swarm->getStatusCode() != 200 ? ($swarm->json())['message'] : null,
+            ];
+            
+            return view('pages/docker-swarm/index', $params);
+        } catch(\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     private function getSwarmManager($nodesJson){
