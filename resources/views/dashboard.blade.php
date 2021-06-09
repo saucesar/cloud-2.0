@@ -3,6 +3,11 @@
 @section('content')
 <div class="content">
     <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                @include('pages.components.messages')
+            </div>
+        </div>
         <div class="row"><!--
             @foreach($machines as $machine)
             <div class="col-lg-6 col-md-12 col-sm-12" style="zoom: 90%;">
