@@ -13,12 +13,12 @@ class CreateContainersTable extends Migration
     {
         Schema::create('containers', function (Blueprint $table) {
             $table->id();
-            $table->string('hashcode_maquina');
+            $table->string('hashcode_maquina')->nullable();
             $table->string('docker_id')->unique();
             $table->string('gitrep')->nullable();
             $table->enum('status', ['new', 'ready'])->default('new');
             $table->bigInteger('user_id');
-            $table->bigInteger('image_id');
+            $table->bigInteger('image_id')->nullable();
             $table->string('nickname', 256)->unique();
             $table->string('volume_name', 256)->nullable();
 
