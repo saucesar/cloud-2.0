@@ -13,7 +13,7 @@ class CreateImagesTable extends Migration
     {
         Schema::create('images', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->string('description', 10240);
             $table->string('fromImage');
             $table->string('fromSrc')->nullable();
