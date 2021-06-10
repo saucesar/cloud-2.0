@@ -7,8 +7,7 @@
         </div>
         <div class="col">
             <label for="Domainname">Github (Must be public)</label>
-            <input class="form-control" type="text" name="gitrep" placeholder="Github repository URL" value="">
-        
+            <input class="form-control" type="text" name="gitrep" placeholder="Github repository URL" value="{{ old('gitrep') }}">
         </div>
     </div>
     @include('pages.components.input_labels', ['labels' => $container_template['Labels']])
