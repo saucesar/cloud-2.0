@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\traits;
 
 trait ArrayTrait {
+    public function getEnvVariables($keys, $values)
+    {
+        return $this->extractArray($keys, $values, '=', true);
+    }
 
     public function extractArray($keys, $values, $separator = '=', $upper = false)
     {
