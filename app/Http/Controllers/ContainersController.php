@@ -12,12 +12,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\traits\ArrayTrait;
+use App\Http\Controllers\traits\PostgresContainer;
 use App\Http\Requests\Container\StoreContainer;
 use App\Models\Volume;
 
 class ContainersController extends Controller
 {
-    use ArrayTrait;
+    use ArrayTrait, PostgresContainer;
 
     public function playStop($container_id)
     {
@@ -87,13 +88,30 @@ class ContainersController extends Controller
     public function terminalNewTab($id)
     {
         $container = Container::firstWhere('docker_id', $id);
+        
+        $url = env('DOCKER_HOST');
+        $attachData = [
+            'AttachStdin' => false,
+            'AttachStdout' => true,
+            'AttachStderr' => true,
+            'DetachKeys' => "ctrl-p,ctrl-q",
+            'Tty' => false,
+            'Cmd' => ["/bin/bash"],
+            'privileged' => true,
+            'CanRemove' => true,
+        ];
+        
+        $createExec = Http::post("$url/containers/$id/exec", $attachData);
+        $execId = $createExec->json()['Id'];
+        $startExec = Http::post("$url/exec/$execId/start", ['Detach' => false]);
+        //dd($startExec->getStatusCode());
+        //$response = Http::get("$url/exec/$execId/json");
+        //dd($response->json());
 
         $params = [
             'mycontainer' => $container,
-            'socketParams' => json_encode([
-                'dockerHost' => env('DOCKER_HOST_WS'),
-                'container_id' => $id,
-            ]),
+            'dockerHost' => env('DOCKER_HOST_WS'),
+            'containerId' => $id,
         ];
 
         return view('pages/my-containers/my_containers_terminal_tab', $params);
@@ -248,7 +266,9 @@ class ContainersController extends Controller
 
     private function setDefaultDockerParams($request)
     {
-        $template = json_decode(DB::table('default_templates')->where('name', 'container')->first()->template, true);
+        //$template = json_decode(DB::table('default_templates')->where('name', 'container')->first()->template, true);
+        $template = \App\Models\Image::find($request->image_id)->imageTemplate->template;
+        
         $template['nickname'] = $request->nickname;
         $template['Hostname'] = $request->nickname;
         $template['image_id'] = $request->image_id;
@@ -263,7 +283,7 @@ class ContainersController extends Controller
         $template['DnsOptions'] = $this->removeNull($request->dnsOptions);
         $template['IPAddress'] = $request->IPAddress;
         $template['IPPrefixLen'] = intval($request->IPPrefixLen);
-        $template['Env'] = $this->extractArray($request->EnvKeys, $request->EnvValues, '=',true);
+        $template['Env'] = $this->getEnvVariables($request->EnvKeys, $request->EnvValues);
         $template['AttachStdin'] = isset($request->AttachStdin);
         $template['AttachStdout'] = isset($request->AttachStdout);
         $template['AttachStderr'] = isset($request->AttachStderr);
@@ -273,9 +293,9 @@ class ContainersController extends Controller
         $template['HostConfig']['PublishAllPorts'] = isset($request->PublishAllPorts);
         $template['HostConfig']['Privileged'] = isset($request->Privileged);
         $template['NetworkMode'] = $request->NetworkMode;
-        //$template['Entrypoint'] = "/docker-entrypoint.sh";
+        //$template['Entrypoint'] = "/bin/bash";
         //$template['Cmd'] = ["/usr/sbin/sshd", "-D"];
-        //$template['Cmd'] = ['/bin/bash'];
+        //$template['Cmd'] = "/bin/bash";
         $template['HostConfig']['RestartPolicy']['name'] = $request->RestartPolicy;
         //$template['HostConfig']['Binds'] = $this->extractArray($request->BindSrc, $request->BindDest, ':');
         $template['HostConfig']['NetworkMode'] = $request->NetworkMode;
@@ -299,21 +319,36 @@ class ContainersController extends Controller
 
     private function createContainer($url, $data)
     {
-        $response = Http::asJson()->post("$url/containers/create", $data);
+        $containerTemplate = json_decode(DB::table('default_templates')->where('name', 'container')->first()->template, true);
+        
+        $dbName = "postgres_db_".now()->format('dmYhis');
+        $dbUser = strtolower(str_replace(' ','',auth()->user()->name));
+        $dbPassword = 'secret';
 
-        if ($response->getStatusCode() == 201) {
-            $container_id = $response->json()['Id'];
-            $response = Http::asJson()->post("$url/containers/$container_id/start");
+        $dbContainer = $this->createPostgresDataBase($dbName, $dbUser, $dbPassword, $containerTemplate);
+        
+        $data['Env'][] = "GITREP={$data['gitrep']}";
+        $data['Env'][] = "DB_HOST={$dbContainer['NetworkSettings']['IPAddress']}";
+        $data['Env'][] = "DB_PORT=".(explode('/',array_keys($dbContainer['NetworkSettings']['Ports'])[0])[0]);
+        $data['Env'][] = "DB_NAME=$dbName";
+        $data['Env'][] = "DB_USER=$dbUser";
+        $data['Env'][] = "DB_PASSWORD=$dbPassword";
+
+        $createContainer = Http::asJson()->post("$url/containers/create", $data);
+
+        if ($createContainer->getStatusCode() == 201) {
+            $container_id = $createContainer->json()['Id'];
+            $startContainer = Http::asJson()->post("$url/containers/$container_id/start");
 
             $data['hashcode_maquina'] = Maquina::first()->hashcode;
             $data['docker_id'] = $container_id;
             $data['dataHora_instanciado'] = now();
-            $data['dataHora_finalizado'] = $response->getStatusCode() == 204 ? null : now();
+            $data['dataHora_finalizado'] = $startContainer->getStatusCode() == 204 ? null : now();
 
             Container::create($data);
             return redirect()->route('containers.index')->with('success', 'Container creation is running!');
         } else {
-            return back()->with('error', $response->json()['message']);
+            return back()->with('error', $createContainer->json()['message']);
         }
     }
 }
