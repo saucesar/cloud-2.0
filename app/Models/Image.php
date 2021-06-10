@@ -11,8 +11,8 @@ class Image extends Model
 
     protected $fillable = ['name', 'description', 'fromImage', 'fromSrc', 'repo', 'tag', 'message'];
 
-    public function getInstances()
+    public function imageTemplate()
     {
-        return InstanciaContainer::where('image_id', $this->id);
+        return $this->hasOne(ImageTemplate::class);
     }
 }
