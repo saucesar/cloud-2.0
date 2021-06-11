@@ -70,7 +70,7 @@
                             <i class="fas fa-server" title="Nickname"></i>
                         </h3>
                         <h3 class="card-title">
-                            {{ $container->image()->name }}
+                            {{ $container->image->name }}
                             <i class="fab fa-docker" title="Docker Image Used"></i>
                         </h3>
                         <h3 class="card-title">
