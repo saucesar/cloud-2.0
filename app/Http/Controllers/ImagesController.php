@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Image\StoreImage;
+use App\Http\Requests\Image\UpdateImage;
 use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,46 +14,43 @@ class ImagesController extends Controller
     {
         $data = [
             'images' => Image::paginate(10),
-            'isAdmin' => Auth::user()->isAdmin(),
             'user_id' => Auth::user()->id,
             'title' => 'Images',
         ];
 
-        return view('pages/images/images', $data);
+        return view('pages/images/index', $data);
     }
 
     public function create()
     {
-        return view('pages/images/images_new');
+        return view('pages/images/create');
     }
 
-    public function store(Request $request)
+    public function store(StoreImage $request)
     {
-        $this->validar($request);
-
-        if (Auth::user()->isAdmin()) {
+        try {
             Image::create($request->all());
-
-            return redirect()->route('images.index')->with('success', 'Container created!!!');
-        } else {
-            return redirect()->route('images.index')->with('error', 'User not have permition for this!!!');
+            return redirect()->route('images.index')->with('success', 'Image has be created!!!');
+        } catch(\Exception $e) {
+            return redirect()->route('images.index')->with('error', $e->getMessage());
         }
     }
 
     public function edit($id)
     {
-        return view('pages/images/images_edit', ['image' => Image::firstWhere('id', $id)]);
+        return view('pages/images/edit', ['image' => Image::firstWhere('id', $id)]);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateImage $request, $id)
     {
-        $this->validar($request);
-        if (Auth::user()->isAdmin()) {
-            $container = Image::firstWhere('id', $id);
-            $container->update($request->all());
+        try {
+            $image = Image::firstWhere('id', $id);
+            $image->update($request->all());
+            
+            return redirect()->route('images.index')->with('success', 'Image has be updated!!!');
+        } catch(\Exception $e) {
+            return redirect()->route('images.index')->with('error', $e->getMessage());
         }
-
-        return redirect()->route('images.index')->with('success', 'Container updated!!!');
     }
 
     public function destroy($id)
@@ -61,15 +60,5 @@ class ImagesController extends Controller
         $container->delete();
 
         return redirect()->route('images.index')->with('success', 'Container deleted!!!');
-    }
-
-    private function validar(Request $request)
-    {
-        $this->validate($request, [
-            'name' => ['required'],
-            'description' => ['required '],
-            'fromImage' => ['required '],
-            'tag' => ['required '],
-        ]);
     }
 }
