@@ -70,7 +70,7 @@ class ContainersController extends Controller
             'dockerWsHost' => env('DOCKER_HOST_WS'),
         ];
 
-        return view('pages/my-containers/my_containers', $params);
+        return view('pages/containers/index', $params);
     }
 
     private function checkActiveStatus($containers)
@@ -85,7 +85,7 @@ class ContainersController extends Controller
         }
     }
 
-    public function terminalNewTab($id)
+    public function terminal($id)
     {
         $container = Container::firstWhere('docker_id', $id);
         
@@ -95,7 +95,7 @@ class ContainersController extends Controller
             'containerId' => $id,
         ];
 
-        return view('pages/my-containers/my_containers_terminal_tab', $params);
+        return view('pages/containers/terminal', $params);
     }
 
     public function show($id)
@@ -110,7 +110,7 @@ class ContainersController extends Controller
             'details' => $details->getStatusCode() == 200 ? $details->json() : [],
         ];
 
-        return view('pages/my-containers/my_containers_details', $params);
+        return view('pages/containers/show', $params);
     }
 
     public function configureContainer(Request $request)
@@ -121,7 +121,7 @@ class ContainersController extends Controller
             'user_id' => Auth::user()->id,
         ];
 
-        return view('pages/my-containers/containers_config', $params);
+        return view('pages/containers/config', $params);
     }
 
     public function store(StoreContainer $request)
@@ -187,7 +187,7 @@ class ContainersController extends Controller
 
     public function edit($id)
     {
-        return view('pages/my-containers/my_containers_edit', ['container' => Container::firstWhere('docker_id', $id)]);
+        return view('pages/containers/edit', ['container' => Container::firstWhere('docker_id', $id)]);
     }
 
     public function update(Request $request, $id)
