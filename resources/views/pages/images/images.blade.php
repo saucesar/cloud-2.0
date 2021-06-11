@@ -24,7 +24,7 @@
       </div>
     </div>
     <div class="col-lg-11 text-right" style="margin-left: 48px;">
-      @if ($isAdmin)
+      @if (auth()->user()->isAdmin())
         <button class="btn btn-primary btn-fab btn-round">
           <a href="{{ route('images.create') }}">
             <i class="material-icons" style="color:white">add_to_queue</i>

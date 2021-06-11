@@ -1,5 +1,5 @@
 <table class='table'>
-    <thead>
+    <thead class="text-center">
         <th>#</th>
         <th>Name</th>
         <th>Description</th>
@@ -10,19 +10,13 @@
         <tr>
             <td><i class="fab fa-docker card-header-info ml-auto"></i></td>
             <td>{{ $image->name }}</td>
-            <td width='550px'>{{ $image->description }}</td>
-            <td class="td-actions text-right">
-                <div class='row'>
-                    {!! Form::open(['route' => 'containers.configure', 'method' => 'post']) !!}
-                    <input type="hidden" value="{{ $image->id }}" name='image_id'>
-                    <input type="hidden" value="{{ $user_id }}" name='user_id'>
-                    <button type="submit" class="btn btn-sucess btn-link">
-                        <i class="material-icons">play_circle_filled</i>
-                        Run
-                    </button>
-                    {!! Form::close() !!}
-                    @if ($isAdmin)
-                    <a rel="tooltip" class="btn btn-success btn-link" data-toggle="collapse"
+            <td>{{ $image->description }}</td>
+            <td class="d-inline-flex text-right">
+                    <a class="btn btn-success btn-link" href="{{ route('containers.configure') }}?image_id={{ $image->id }}" title="Iniciar container com esta imagem.">
+                        <i class="fas fa-play"></i>
+                    </a>
+                    @if (auth()->user()->isAdmin())
+                    <a rel="tooltip" class="btn btn-info btn-link" data-toggle="collapse"
                         data-target="#{{ $image->id }}" aria-expanded="false" aria-controls="collapseExample">
                         <i class="material-icons">details</i>
                         <div class="ripple-container"></div>
@@ -36,14 +30,13 @@
                     </button>
                     {!! Form::close() !!}
                     @endif
-                </div>
             </td>
         </tr>
         <tr>
             <td></td>
             <td colspan="3">
                 <div class="collapse" id="{{ $image->id }}">
-                    @include('pages.images.images_show_form', ['image' => $image, 'isAdmin' => $isAdmin])
+                    @include('pages.images.images_show_form', ['image' => $image, 'isAdmin' => auth()->user()->isAdmin()])
                 </div>
             </td>
         </tr>
