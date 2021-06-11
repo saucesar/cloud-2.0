@@ -15,9 +15,11 @@
             </div>
             <div class="card-body">
               <div class="table-responsive">
-                  {!! Form::open(['route' => ['images.update', $image], 'method' => 'put']) !!}
-                    @include('pages/images/images_form', ['image' => $image])
-                  {!! Form::close() !!}
+                  <form action="{{ route('images.update', $image) }}" method="post">
+                    @csrf
+                    @method('put')
+                    @include('pages/images/form', ['image' => $image])
+                  </form>
               </div>
             </div>
           </div>
