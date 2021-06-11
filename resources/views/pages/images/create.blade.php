@@ -14,11 +14,10 @@
               <p class="card-category">Create New Container Image</p>
             </div>
             <div class="card-body">
-              <div class="">
-                  {!! Form::open(['route' => 'images.store', 'method' => 'post']) !!}
-                    @include('pages/images/images_form')
-                  {!! Form::close() !!}
-              </div>
+              <form action="{{ route('images.store') }}" method="POST">
+                @csrf
+                @include('pages/images/form')
+              </form>
             </div>
           </div>
         </div>

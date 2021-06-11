@@ -25,14 +25,9 @@
     </div>
     <div class="col-lg-11 text-right" style="margin-left: 48px;">
       @if (auth()->user()->isAdmin())
-        <button class="btn btn-primary btn-fab btn-round">
-          <a href="{{ route('images.create') }}">
-            <i class="material-icons" style="color:white">add_to_queue</i>
-          </a>
-          @if(session('error'))
-          <div class="alert alert-danger">{{ session('error') }}</div>
-          @endif
-        </button>
+      <a class="btn btn-primary btn-fab btn-round" href="{{ route('images.create') }}">
+        <i class="material-icons" style="color:white">add_to_queue</i>
+      </a>
       @endif
     </div>
   </div>
