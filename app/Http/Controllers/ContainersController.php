@@ -89,25 +89,6 @@ class ContainersController extends Controller
     {
         $container = Container::firstWhere('docker_id', $id);
         
-        $url = env('DOCKER_HOST');
-        $attachData = [
-            'AttachStdin' => false,
-            'AttachStdout' => true,
-            'AttachStderr' => true,
-            'DetachKeys' => "ctrl-p,ctrl-q",
-            'Tty' => false,
-            'Cmd' => ["/bin/bash"],
-            'privileged' => true,
-            'CanRemove' => true,
-        ];
-        
-        $createExec = Http::post("$url/containers/$id/exec", $attachData);
-        $execId = $createExec->json()['Id'];
-        $startExec = Http::post("$url/exec/$execId/start", ['Detach' => false]);
-        //dd($startExec->getStatusCode());
-        //$response = Http::get("$url/exec/$execId/json");
-        //dd($response->json());
-
         $params = [
             'mycontainer' => $container,
             'dockerHost' => env('DOCKER_HOST_WS'),
@@ -266,8 +247,8 @@ class ContainersController extends Controller
 
     private function setDefaultDockerParams($request)
     {
-        //$template = json_decode(DB::table('default_templates')->where('name', 'container')->first()->template, true);
-        $template = \App\Models\Image::find($request->image_id)->imageTemplate->template;
+        $template = json_decode(DB::table('default_templates')->where('name', 'container')->first()->template, true);
+        //$template = \App\Models\Image::find($request->image_id)->imageTemplate->template;
         
         $template['nickname'] = $request->nickname;
         $template['Hostname'] = $request->nickname;
@@ -293,9 +274,9 @@ class ContainersController extends Controller
         $template['HostConfig']['PublishAllPorts'] = isset($request->PublishAllPorts);
         $template['HostConfig']['Privileged'] = isset($request->Privileged);
         $template['NetworkMode'] = $request->NetworkMode;
-        //$template['Entrypoint'] = "/bin/bash";
+        $template['Entrypoint'] = "/bin/bash";
         //$template['Cmd'] = ["/usr/sbin/sshd", "-D"];
-        //$template['Cmd'] = "/bin/bash";
+       // $template['Cmd'] = "/bin/bash";
         $template['HostConfig']['RestartPolicy']['name'] = $request->RestartPolicy;
         //$template['HostConfig']['Binds'] = $this->extractArray($request->BindSrc, $request->BindDest, ':');
         $template['HostConfig']['NetworkMode'] = $request->NetworkMode;
@@ -321,7 +302,7 @@ class ContainersController extends Controller
     {
         $containerTemplate = json_decode(DB::table('default_templates')->where('name', 'container')->first()->template, true);
         
-        $dbName = "postgres_db_".now()->format('dmYhis');
+        $dbName = "db_".now()->format('dmYhis');
         $dbUser = strtolower(str_replace(' ','',auth()->user()->name));
         $dbPassword = 'secret';
 
