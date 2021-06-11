@@ -7,7 +7,7 @@
         <select name="image_id" class='form-control' required>
             <option value="">Select a Image</option>
             @foreach($images as $image)
-            <option value="{{ $image->id }}" {{ old('image_id') == $image->id ? 'selected' : '' }}>{{ $image->name }}</option>
+            <option value="{{ $image->id }}" {{ old('image_id') == $image->id || $requiredImage->id == $image->id ? 'selected' : '' }}>{{ $image->name }}</option>
             @endforeach
         </select>
         @error('image_id')
@@ -21,7 +21,7 @@
     <div class="row">
         <div class="col">
             <label for="Domainname">Domainname</label>
-            <input type="text" name="Domainname" value="{{ old('Domainname') ?? $container_template['Domainname'] }}"
+            <input type="text" name="Domainname" value="{{ old('Domainname') ?? $container_template['Domainname'] ?? ''}}"
                 class="form-control">
         </div>
         <div class="col">
