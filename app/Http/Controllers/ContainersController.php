@@ -54,9 +54,8 @@ class ContainersController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if(!isset($user)){
-            return redirect()->route('login');
-        }
+        if(!isset($user)){ return redirect()->route('login'); }
+        
         $containers = Container::where('user_id', Auth::user()->id)->paginate(10);
         $this->checkActiveStatus($containers);
 
@@ -115,10 +114,16 @@ class ContainersController extends Controller
 
     public function configureContainer(Request $request)
     {
+        $image = Image::find($request->image_id);
+        $user = Auth::user();
+
         $params = [
-            'image' => Image::firstWhere('id', $request->image_id),
+            'requiredImage' => $image,
+            'images' => Image::all(),
             'user' => Auth::user()->name,
             'user_id' => Auth::user()->id,
+            'container_template' => $image->imageTemplate->template,
+            'volumes' => Volume::where('user_id', $user->id)->get(),
         ];
 
         return view('pages/containers/config', $params);
