@@ -6,7 +6,6 @@
         @if($isAdminArea ?? false)
         <th>User Email</th>
         @endif
-        <th>Iniciated at</th>
         <th>Running</th>
         <th>Options</th>
         <th>
@@ -22,7 +21,6 @@
             @if($isAdminArea)
             <td>{{ $container->user()->email }}</td>
             @endif
-            <td>{{ $container->dataHora_instanciado }}</td>
             <td class="td-actions text-center">
                 @if ($container->dataHora_finalizado)
                 <a href="#" class="btn btn-danger" data-original-title="" title="">
