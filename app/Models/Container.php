@@ -27,6 +27,6 @@ class Container extends Model
 
     public function image()
     {
-        return Image::firstWhere('id', $this->image_id);
+        return $this->belongsTo(Image::class, 'image_id', 'id');
     }
 }
