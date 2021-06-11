@@ -53,19 +53,19 @@
                             </nav>
                             <div class="tab-content" id="nav-tabContent">
                                 <div class="tab-pane show active" id="nav-status" role="tabpanel" aria-labelledby="nav-status-tab">
-                                    @include('pages.my-containers.status_card')
+                                    @include('pages.containers.card.status')
                                 </div>
                                 <div class="tab-pane" id="nav-host-config" role="tabpanel" aria-labelledby="nav-host-config-tab">
-                                    @include('pages.my-containers.host_config_card')
+                                    @include('pages.containers.card.host_config')
                                 </div>
                                 <div class="tab-pane" id="nav-config" role="tabpanel" aria-labelledby="nav-config-tab">
-                                    @include('pages.my-containers.config_card')
+                                    @include('pages.containers.card.config')
                                 </div>
                                 <div class="tab-pane" id="nav-network" role="tabpanel" aria-labelledby="nav-network-tab">
-                                    @include('pages.my-containers.network_card')
+                                    @include('pages.containers.card.network')
                                 </div>
                                 <div class="tab-pane" id="nav-info" role="tabpanel" aria-labelledby="nav-info-tab">
-                                    @include('pages.my-containers.info_card')
+                                    @include('pages.containers.card.info')
                                 </div>
                             </div>
                             @else
