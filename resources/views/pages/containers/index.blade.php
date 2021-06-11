@@ -25,7 +25,7 @@
         <button class="btn btn-primary btn-fab btn-round" data-toggle="modal" data-target="#modalContainers">
             <i class="material-icons" style="color:white">add_to_queue</i>
         </button>
-        @include('pages/my-containers/modal_containers')
     </div>
+    @include('pages/containers/modal/new_container')
 </div>
 @endsection

@@ -29,12 +29,11 @@ const endpoint = "/attach/ws?logs=0&stream=1&stdin=1&stdout=1&stderr=1";
 const url = host+'/containers/'+containerId+endpoint;
 
 const webSocket = new WebSocket(url);
-webSocket.onopen = function (e) {
-    //alert("Connected: "+(webSocket.readyState == 1));
-    webSocket.send("\n");
+webSocket.onopen = function (e) { webSocket.send("\n"); }
+webSocket.onclose = function(e) {
+    alert("Terminal disconnected");
+    window.location.href = "<?= route('containers.index'); ?>";
 }
-//webSocket.onmessage = function (e) {term.write(e.data);}
-webSocket.onclose = function(e) {console.log(e); alert("Connected: "+(webSocket.readyState == 1));}
 
 const attachAddon = new AttachAddon.AttachAddon(webSocket);
 const fitAddon = new FitAddon.FitAddon();
