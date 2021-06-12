@@ -38,6 +38,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('containers', 'ContainersController@index')->name('containers.index');
     Route::get('containers-config', 'ContainersController@configureContainer')->name('containers.configure');
     Route::get('terminal-tab/{docker_id}', 'ContainersController@terminal')->name('container.terminalTab');
+    Route::get('containers/loading/{id}', 'ContainersController@loading')->name('container.loading');
     Route::resource('containers', 'ContainersController')->except(['create', 'index']);
     Route::get('containers/play-stop/{containerId}', 'ContainersController@playStop')->name('containers.playStop');
     Route::post('containers/{docker_id}/delete', 'ContainersController@deleteContainer')->name('container.delete');
