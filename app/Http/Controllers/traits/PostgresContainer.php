@@ -15,7 +15,7 @@ trait PostgresContainer {
 
         if ($pullImage->getStatusCode() != 200) { dd($pullImage->json()); }
         
-        $containerTemplate['nickname'] = "postgres_$dbName";
+        $containerTemplate['nickname'] = $dbName;
         $containerTemplate['Image'] = "postgres:latest";
 
         $containerTemplate['Env'] = [
