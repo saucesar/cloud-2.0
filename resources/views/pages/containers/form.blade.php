@@ -2,30 +2,39 @@
     <div class="col-sm-5">
         @include('pages.components.input_text', ['name' => 'nickname', 'label' => 'NickName', 'placeholder' => "Nickname to container"])
     </div>
-    <div class="col-sm-5">
+    <div class="col">
+        <label for="Domainname">Domainname</label>
+        <input type="text" name="Domainname" value="{{ old('Domainname') ?? $container_template['Domainname'] ?? ''}}" class="form-control">
+    </div>
+</div>
+<br>
+<div class="row">
+    <div class="col">
         <label for="image_id">Image</label>
         <select name="image_id" class='form-control' required>
             <option value="">Select a Image</option>
             @foreach($images as $image)
-            <option value="{{ $image->id }}" {{ old('image_id') == $image->id || $requiredImage->id == $image->id ? 'selected' : '' }}>{{ $image->name }}</option>
+            <option value="{{ $image->id }}" {{ old('image_id') == $image->id || isset($requiredImage) && $requiredImage->id == $image->id ? 'selected' : '' }}>{{ $image->name }}</option>
             @endforeach
         </select>
         @error('image_id')
         <small class="text-danger">{{ $message }}</small>
         @enderror
     </div>
+    <div class="col">
+        <label for="database">Database</label>
+        <select name="database" class="form-control">
+            <option value="">Select a database</option>
+            <option value="postgres">Postgres</option>
+            <option value="mysql">Mysql</option>
+        </select>
+    </div>
 </div>
 <br>
-
 <div class="text-left">
     <div class="row">
         <div class="col">
-            <label for="Domainname">Domainname</label>
-            <input type="text" name="Domainname" value="{{ old('Domainname') ?? $container_template['Domainname'] ?? ''}}"
-                class="form-control">
-        </div>
-        <div class="col">
-            <label for="Domainname">Github (Must be public)</label>
+            <label for="gitrep">Github (Must be public)</label>
             <input class="form-control" type="text" name="gitrep" placeholder="Github repository URL"
                 value="{{ old('gitrep') }}">
         </div>
