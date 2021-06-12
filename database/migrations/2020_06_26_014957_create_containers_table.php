@@ -16,7 +16,6 @@ class CreateContainersTable extends Migration
             $table->string('hashcode_maquina')->nullable();
             $table->string('docker_id')->unique();
             $table->string('gitrep')->nullable();
-            $table->enum('status', ['new', 'ready'])->default('new');
             $table->bigInteger('user_id');
             $table->bigInteger('image_id')->nullable();
             $table->string('nickname', 256)->unique();
