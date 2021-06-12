@@ -66,7 +66,6 @@ class ContainersController extends Controller
             'images' => Image::all(),
             'container_template' => json_decode(DB::table('default_templates')->where('name', 'container')->first()->template, true),
             'volumes' => Volume::where('user_id', $user->id)->get(),
-            'dockerWsHost' => env('DOCKER_HOST_WS'),
         ];
 
         return view('pages/containers/index', $params);
@@ -135,17 +134,17 @@ class ContainersController extends Controller
             $url = env('DOCKER_HOST');
             $data = $this->setDefaultDockerParams($request);
             $data['gitrep'] = $request->gitrep;
+            $data['database'] = $request->database;
             
             $volume_name = $data['nickname'].'-volume';
             $volume = Volume::firstWhere('name', $volume_name);
-            
             if($request->volume == 'new' && !isset($volume)){
                 $user = Auth::user();
                 $create_volume = $this->createVolume($url, $user, $volume_name, $data['nickname']);
                 $data['volume_name'] = $volume_name;
 
                 if($create_volume->getStatusCode() == 201){
-                    Volume::create(['user_id' => $user->id, 'name' => $volume_name]);
+                    $user->volumes()->create(['user_id' => $user->id, 'name' => $volume_name]);
                     
                     return $this->proceedCreation($data, $url, $volume_name, $request->storage_path);
                 } else {
@@ -307,18 +306,20 @@ class ContainersController extends Controller
     {
         $containerTemplate = json_decode(DB::table('default_templates')->where('name', 'container')->first()->template, true);
         
-        $dbName = "db_".now()->format('dmYhis');
-        $dbUser = strtolower(str_replace(' ','',auth()->user()->name));
-        $dbPassword = 'secret';
-
-        $dbContainer = $this->createPostgresDataBase($dbName, $dbUser, $dbPassword, $containerTemplate);
-        
-        $data['Env'][] = "GITREP={$data['gitrep']}";
-        $data['Env'][] = "DB_HOST={$dbContainer['NetworkSettings']['IPAddress']}";
-        $data['Env'][] = "DB_PORT=".(explode('/',array_keys($dbContainer['NetworkSettings']['Ports'])[0])[0]);
-        $data['Env'][] = "DB_NAME=$dbName";
-        $data['Env'][] = "DB_USER=$dbUser";
-        $data['Env'][] = "DB_PASSWORD=$dbPassword";
+        if($data['database'] == 'postgres') {
+            $dbName = "db_{$data['nickname']}";
+            $dbUser = strtolower(str_replace(' ','',auth()->user()->name));
+            $dbPassword = 'secret';
+    
+            $dbContainer = $this->createPostgresDataBase($dbName, $dbUser, $dbPassword, $containerTemplate);
+            
+            $data['Env'][] = "GITREP={$data['gitrep']}";
+            $data['Env'][] = "DB_HOST={$dbContainer['NetworkSettings']['IPAddress']}";
+            $data['Env'][] = "DB_PORT=".(explode('/',array_keys($dbContainer['NetworkSettings']['Ports'])[0])[0]);
+            $data['Env'][] = "DB_NAME=$dbName";
+            $data['Env'][] = "DB_USER=$dbUser";
+            $data['Env'][] = "DB_PASSWORD=$dbPassword";
+        }
 
         $createContainer = Http::asJson()->post("$url/containers/create", $data);
 
@@ -332,9 +333,20 @@ class ContainersController extends Controller
             $data['dataHora_finalizado'] = $startContainer->getStatusCode() == 204 ? null : now();
 
             Container::create($data);
-            return redirect()->route('containers.index')->with('success', 'Container creation is running!');
+            //return redirect()->route('containers.index')->with('success', 'Container creation is running!');
+            return redirect()->route('container.loading', ['id' => $container_id])->with('success', 'Container creation is running!');
         } else {
             return back()->with('error', $createContainer->json()['message']);
         }
+    }
+
+    public function loading($id)
+    {
+        $params = [
+            'dockerHost' => env('DOCKER_HOST_WS'),
+            'containerId' => $id,
+        ];
+
+        return view('pages.containers.loading', $params);
     }
 }
