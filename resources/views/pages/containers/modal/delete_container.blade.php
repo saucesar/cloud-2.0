@@ -16,7 +16,7 @@
                     <label title="Check this option to delete the data saved on the volume. If you do not check the data will still be saved."
                             for="delete_volume">Delete Volume? All data will be lost.</label>
                     <br>
-                    <input type="checkbox" name="delete_container" id="confime_delete" required>
+                    <input type="checkbox" name="delete_container" id="confime_delete{{ $container->id }}" required>
                     <label for="delete_container">I understand and want to continue.</label>
                     <h5 class='text-danger'>This action not be undone.</h5>
                 </div>
