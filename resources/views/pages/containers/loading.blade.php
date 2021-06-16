@@ -21,14 +21,13 @@
 <script>
 const host = "<?= $dockerHost ?>";
 const containerId = "<?= $containerId ?>";
-const endpoint = "/attach/ws?logs=0&stream=1&stdin=1&stdout=1&stderr=1";
+const endpoint = "/attach/ws?logs=0&stream=1&stdout=1&stderr=1";
 const url = host+'/containers/'+containerId+endpoint;
 
 const webSocket = new WebSocket(url);
 webSocket.onopen = function (e) {
     webSocket.send("\n");
-    webSocket.send("bash -c /clone-and-install.sh\n");
-    webSocket.send("exit\n");
+    webSocket.send("bash -c /clone-and-install.sh &\n");
 }
 webSocket.onclose = function(e) {
     alert("Terminal disconnected");
