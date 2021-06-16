@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 trait PostgresContainer {
     public function createPostgresDataBase(string $dbName, string $dbUser, string $dbPassword, Array $containerTemplate)
     {
-        $url = env('DOCKER_HOST');   
+        $url = env('DOCKER_HOST');
         $uri = "images/create?fromImage=postgres&tag=latest";
         
         $pullImage = Http::post("$url/$uri");
@@ -19,6 +19,7 @@ trait PostgresContainer {
         $containerTemplate['Image'] = "postgres:latest";
 
         $containerTemplate['Env'] = [
+            'DB_CONNECTION=pgsql',
             "POSTGRES_USER=$dbUser",
             "POSTGRES_DB=$dbName",
             "POSTGRES_PASSWORD=$dbPassword",
