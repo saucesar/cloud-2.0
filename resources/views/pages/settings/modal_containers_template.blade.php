@@ -12,7 +12,7 @@
             </div>
             {!! Form::open(['route' => 'container-template.update', 'method' => 'put']) !!}
             <div class="modal-body">
-                @include('pages/settings/container_form')
+                @include('pages/containers/form')
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal">
