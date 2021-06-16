@@ -3,6 +3,7 @@
         <th>#</th>
         <th>Container Id</th>
         <th>Nickname</th>
+        <th>IP</th>
         @if($isAdminArea ?? false)
         <th>User Email</th>
         @endif
@@ -17,7 +18,8 @@
         <tr>
             <td><i class="fas fa-server"></i></td>
             <td>{{ substr($container->docker_id, 0, 12) }}</td>
-            <td>{{ $container->nickname }}({{ $container->status }})</td>
+            <td>{{ $container->nickname }}</td>
+            <td>{{ $containerIp[$container->docker_id] }}</td>
             @if($isAdminArea)
             <td>{{ $container->user()->email }}</td>
             @endif
@@ -74,9 +76,6 @@
                 </div>
             </td>
             <td class="td-actions text-left">
-                <button class="btn btn-info btn-link" type="button" onclick="gitClone();">
-                    c
-                </button>
                 <button class="btn btn-info btn-link" type="button" onclick="gitPull();"
                     title="{{ isset($container->gitrep ) ?'Git pull.' : 'To enable set git project path' }}"
                     {{ isset($container->gitrep ) ? : 'disabled' }}>
@@ -84,34 +83,32 @@
                 </button>
             </td>
         </tr>
-        <tr>
-            <td colspan="7">
-                <textarea id="textArea{{ $container->docker_id }}" cols="60" rows="2" class="form-control bg-dark text-white"></textarea>
-            </td>
-        </tr>
-        @if($container->status == 'new' && isset($container->gitrep))
-        <script type="text/javascript">
-            const wsHost = "<?= $dockerWsHost; ?>";
-            const containerId = "<?= $container->docker_id; ?>";
-            const endpoint = "/attach/ws?logs=0&stream=1&stdin=1&stdout=1&stderr=1";
-            const url = wsHost + '/containers/' + containerId + endpoint;
-            const socket = new WebSocket(url);
-            
-            let text = document.getElementById("textArea"+containerId);
-            console.log(text.value);
-
-            socket.onmessage = function(e) {
-                console.log(e.data);
-                text.value = e.data;
-            };
-            socket.onopen = function(e) {
-                //alert("Connected: "+(socket.readyState == 1));
-                socket.send('cd / && ./clone-and-install.sh \n');
-                console.log(e);
-            };
+        <script>
+            function gitPull() {
+                connectWsAndPull("<?= $container->docker_id ?>");
+            }
         </script>
-        @endif
         @endforeach
     </tbody>
 </table>
 {!! $mycontainers->links() !!}
+@push('head_scripts')
+<script>
+
+function connectWsAndPull(containerId) {
+    const host = "<?= $dockerHostWs ?>";
+    const endpoint = "/attach/ws?logs=0&stream=1&stdout=1&stderr=1";
+    const url = host + '/containers/' + containerId + endpoint;
+
+    const webSocket = new WebSocket(url);
+    webSocket.onopen = function(e) { 
+        webSocket.send('\n');
+        webSocket.send("cd /var/www/html/project/ && cd $(ls) && git pull\n");
+        console.log('Connection open');
+        alert('Project updated!');
+    }
+
+    return webSocket;
+}
+</script>
+@endpush
