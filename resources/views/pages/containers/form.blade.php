@@ -8,6 +8,7 @@
     </div>
 </div>
 <br>
+@if(isset($images))
 <div class="row">
     <div class="col">
         <label for="image_id">Image</label>
@@ -30,6 +31,7 @@
         </select>
     </div>
 </div>
+@endif
 <br>
 <div class="text-left">
     <div class="row">
