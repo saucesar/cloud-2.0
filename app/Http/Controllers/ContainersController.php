@@ -61,7 +61,9 @@ class ContainersController extends Controller
 
         $params = [
             'mycontainers' => $containers,
+            'containerIp' => $this->getIp($containers),
             'dockerHost' => env('DOCKER_HOST'),
+            'dockerHostWs' => env('DOCKER_HOST_WS'),
             'title' => 'My Containers',
             'images' => Image::all(),
             'container_template' => json_decode(DB::table('default_templates')->where('name', 'container')->first()->template, true),
@@ -69,6 +71,21 @@ class ContainersController extends Controller
         ];
 
         return view('pages/containers/index', $params);
+    }
+
+    private function getIp($containers)
+    {
+        $array = [];
+        $url = env('DOCKER_HOST');
+
+        foreach($containers as $container) {
+            $info = Http::get("$url/containers/{$container->docker_id}/json");
+            if($info->getStatusCode() == 200) {
+                $array[$container->docker_id] = $info->json()['NetworkSettings']['IPAddress'];
+            }
+        }
+
+        return $array;
     }
 
     private function checkActiveStatus($containers)
@@ -333,8 +350,12 @@ class ContainersController extends Controller
             $data['dataHora_finalizado'] = $startContainer->getStatusCode() == 204 ? null : now();
 
             Container::create($data);
-            //return redirect()->route('containers.index')->with('success', 'Container creation is running!');
-            return redirect()->route('container.loading', ['id' => $container_id])->with('success', 'Container creation is running!');
+
+            if(isset($data['gitrep'])) {
+                return redirect()->route('container.loading', ['id' => $container_id]);
+            } else {
+                return redirect()->route('containers.index')->with('success', 'Container creation is running!');
+            }
         } else {
             return back()->with('error', $createContainer->json()['message']);
         }
