@@ -11,14 +11,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\traits\ArrayTrait;
-use App\Http\Controllers\traits\PostgresContainer;
+use App\Http\Controllers\Traits\PostgresContainer;
 use App\Http\Requests\Container\StoreContainer;
 use App\Models\Volume;
 
 class ContainersController extends Controller
 {
-    use ArrayTrait, PostgresContainer;
+    use PostgresContainer;
 
     public function playStop($container_id)
     {
@@ -149,61 +148,12 @@ class ContainersController extends Controller
     {
         try{
             $url = env('DOCKER_HOST');
-            $data = $this->setDefaultDockerParams($request);
-            $data['gitrep'] = $request->gitrep;
-            $data['database'] = $request->database;
+            $user = Auth::user();
             
-            $volume_name = $data['nickname'].'-volume';
-            $volume = Volume::firstWhere('name', $volume_name);
-            if($request->volume == 'new' && !isset($volume)){
-                $user = Auth::user();
-                $create_volume = $this->createVolume($url, $user, $volume_name, $data['nickname']);
-                $data['volume_name'] = $volume_name;
-
-                if($create_volume->getStatusCode() == 201){
-                    $user->volumes()->create(['user_id' => $user->id, 'name' => $volume_name]);
-                    
-                    return $this->proceedCreation($data, $url, $volume_name, $request->storage_path);
-                } else {
-                    return back()->withInput()->with('error', $create_volume->json()['message']);
-                }
-            } else {
-                $data['volume_name'] = $request->volume;
-                return $this->proceedCreation($data, $url, $request->volume, $request->storage_path);
-            }
-            
+            return \App\Http\Controllers\Traits\DockerContainer::create($request, $user, $url);
         } catch(Exception $e){
             return redirect()->route('containers.index')->with('error', $e->getMessage())->withInput();
         }
-    }
-
-    private function proceedCreation($data, $url, $volume_name, $storage_path)
-    {
-        $data['HostConfig']['Binds'][] = $volume_name.':'.$storage_path;
-    
-        $this->pullImage($url, Image::find($data['image_id']));
-
-        return $this->createContainer($url, $data);
-    }
-
-    private function createVolume($url, $user, $volume_name, $nickname)
-    {
-        $volume_size = ($user->category->storage_limit/1024).'G';
-        $volume_template = json_decode(DB::table('default_templates')->where('name', 'volume_driver')->first()->template, true);
-        $volume_template['Name'] = $volume_name;
-        $volume_template['Labels']['container.name'] = $nickname;
-        
-        if($volume_template['Driver'] != 'local'){
-            $volume_template['DriverOpts']['size'] = $volume_size;
-        }
-
-        if(count($volume_template['DriverOpts']) == 0){
-            $volume_template['DriverOpts'] = null;
-        }
-
-        $create_volume = Http::asJson()->post("$url/volumes/create", $volume_template);
-        
-        return $create_volume;
     }
 
     public function edit($id)
@@ -263,101 +213,6 @@ class ContainersController extends Controller
             return back()->with('success', 'Container deleted with sucess!');
         } else {
             return back()->with('error', $responseDelete->json()['message']);
-        }
-    }
-
-    private function setDefaultDockerParams($request)
-    {
-        $template = json_decode(DB::table('default_templates')->where('name', 'container')->first()->template, true);
-        //$template = \App\Models\Image::find($request->image_id)->imageTemplate->template;
-        
-        $template['nickname'] = $request->nickname;
-        $template['Hostname'] = $request->nickname;
-        $template['image_id'] = $request->image_id;
-        $template['Image'] = Image::find($request->image_id)->fromImage;
-        $template['user_id'] = Auth::user()->id;
-
-        $template['HostConfig']['Memory'] = Auth::user()->category->ram_limit * 1024 * 1024;//Converte de MB para bytes
-
-        $template['Domainname'] = str_replace(' ', '', $request->Domainname);
-        $template['Labels'] = $this->extractLabels($request);
-        $template['Dns'] = [$request->dns];
-        $template['DnsOptions'] = $this->removeNull($request->dnsOptions);
-        $template['IPAddress'] = $request->IPAddress;
-        $template['IPPrefixLen'] = intval($request->IPPrefixLen);
-        $template['Env'] = $this->getEnvVariables($request->EnvKeys, $request->EnvValues);
-        $template['AttachStdin'] = isset($request->AttachStdin);
-        $template['AttachStdout'] = isset($request->AttachStdout);
-        $template['AttachStderr'] = isset($request->AttachStderr);
-        $template['OpenStdin'] = isset($request->OpenStdin);
-        $template['StdinOnce'] = isset($request->StdinOnce);
-        $template['Tty'] = isset($request->Tty);
-        $template['HostConfig']['PublishAllPorts'] = isset($request->PublishAllPorts);
-        $template['HostConfig']['Privileged'] = isset($request->Privileged);
-        $template['NetworkMode'] = $request->NetworkMode;
-        $template['Entrypoint'] = "/bin/bash";
-        //$template['Cmd'] = ["/usr/sbin/sshd", "-D"];
-       // $template['Cmd'] = "/bin/bash";
-        $template['HostConfig']['RestartPolicy']['name'] = $request->RestartPolicy;
-        //$template['HostConfig']['Binds'] = $this->extractArray($request->BindSrc, $request->BindDest, ':');
-        $template['HostConfig']['NetworkMode'] = $request->NetworkMode;
-
-        return $template;
-    }
-
-    private function pullImage($url, Image $image)
-    {
-        $uri = "images/create?fromImage=$image->fromImage&tag=$image->tag";
-        $image->fromSrc ? $uri .= "&fromSrc=$image->fromSrc" : $uri;
-        $image->repo ? $uri .= "&repo=$image->repo" : $uri;
-        $image->message ? $uri .= "&message=$image->message" : $uri;
-
-        $response = Http::post("$url/$uri");
-
-        if ($response->getStatusCode() != 200) {
-            dd($response->json());
-        }
-    }
-
-    private function createContainer($url, $data)
-    {
-        $containerTemplate = json_decode(DB::table('default_templates')->where('name', 'container')->first()->template, true);
-        
-        if($data['database'] == 'postgres') {
-            $dbName = "db_{$data['nickname']}";
-            $dbUser = strtolower(str_replace(' ','',auth()->user()->name));
-            $dbPassword = 'secret';
-    
-            $dbContainer = $this->createPostgresDataBase($dbName, $dbUser, $dbPassword, $containerTemplate);
-            
-            $data['Env'][] = "GITREP={$data['gitrep']}";
-            $data['Env'][] = "DB_HOST={$dbContainer['NetworkSettings']['IPAddress']}";
-            $data['Env'][] = "DB_PORT=".(explode('/',array_keys($dbContainer['NetworkSettings']['Ports'])[0])[0]);
-            $data['Env'][] = "DB_NAME=$dbName";
-            $data['Env'][] = "DB_USER=$dbUser";
-            $data['Env'][] = "DB_PASSWORD=$dbPassword";
-        }
-
-        $createContainer = Http::asJson()->post("$url/containers/create", $data);
-
-        if ($createContainer->getStatusCode() == 201) {
-            $container_id = $createContainer->json()['Id'];
-            $startContainer = Http::asJson()->post("$url/containers/$container_id/start");
-
-            $data['hashcode_maquina'] = Maquina::first()->hashcode;
-            $data['docker_id'] = $container_id;
-            $data['dataHora_instanciado'] = now();
-            $data['dataHora_finalizado'] = $startContainer->getStatusCode() == 204 ? null : now();
-
-            Container::create($data);
-
-            if(isset($data['gitrep'])) {
-                return redirect()->route('container.loading', ['id' => $container_id]);
-            } else {
-                return redirect()->route('containers.index')->with('success', 'Container creation is running!');
-            }
-        } else {
-            return back()->with('error', $createContainer->json()['message']);
         }
     }
 
