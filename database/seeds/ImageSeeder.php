@@ -28,7 +28,7 @@ class ImageSeeder extends Seeder
             "StdinOnce" => false,
             "Tty" =>true,
             "HostConfig" => [
-                "PublishAllPorts" => true, "Privileged" => true, "RestartPolicy" => ["name" => "always",], "NetworkMode" => "bridge",
+                "PublishAllPorts" => true, "Privileged" => false, "RestartPolicy" => ["name" => "always",], "NetworkMode" => "bridge",
                 "Binds" => [
                     "/var/run/docker.sock:/var/run/docker.sock",
                     "/tmp:/tmp",
@@ -36,29 +36,31 @@ class ImageSeeder extends Seeder
             ],
         ];
 
-        $image = \App\Models\Image::create([
-            'name' => 'Nginx:latest',
-            'description' => 'Nginx (pronounced "engine-x") is an open source
-                              reverse proxy server for HTTP, HTTPS, SMTP, POP3, and IMAP
-                              protocols, as well as a load balancer, HTTP cache, and a web
-                              server (origin server).',
-            'fromImage' => 'nginx',
-            'tag' => 'latest',
-        ]);
+        if(env('APP_ENV') == 'local') {
+            $image = \App\Models\Image::create([
+                'name' => 'Nginx:latest',
+                'description' => 'Nginx (pronounced "engine-x") is an open source
+                                reverse proxy server for HTTP, HTTPS, SMTP, POP3, and IMAP
+                                protocols, as well as a load balancer, HTTP cache, and a web
+                                server (origin server).',
+                'fromImage' => 'nginx',
+                'tag' => 'latest',
+            ]);
 
-        $image->imageTemplate()->create([ 'template' => $templateImage ]);
+            $image->imageTemplate()->create([ 'template' => $templateImage ]);
 
-        $image = \App\Models\Image::create([
-            'name' => 'Nginx-ssh:latest',
-            'description' => 'Nginx-ssh (pronounced "engine-x") is an open source
-                              reverse proxy server for HTTP, HTTPS, SMTP, POP3, and IMAP
-                              protocols, as well as a load balancer, HTTP cache, and a web
-                              server (origin server). Is include a ssh container access.',
-            'fromImage' => 'saucesar/nginx-ssh',
-            'tag' => 'latest',
-        ]);
+            $image = \App\Models\Image::create([
+                'name' => 'Nginx-ssh:latest',
+                'description' => 'Nginx-ssh (pronounced "engine-x") is an open source
+                                reverse proxy server for HTTP, HTTPS, SMTP, POP3, and IMAP
+                                protocols, as well as a load balancer, HTTP cache, and a web
+                                server (origin server). Is include a ssh container access.',
+                'fromImage' => 'saucesar/nginx-ssh',
+                'tag' => 'latest',
+            ]);
 
-        $image->imageTemplate()->create([ 'template' => $templateImage ]);
+            $image->imageTemplate()->create([ 'template' => $templateImage ]);
+        }
 
         $templateImage = [
             "nickname" => "NICKNAME",
@@ -90,23 +92,24 @@ class ImageSeeder extends Seeder
             "StdinOnce" => false,
             "Tty" =>true,
             "HostConfig" => [
-                "PublishAllPorts" => true, "Privileged" => true, "RestartPolicy" => ["name" => "always",], "NetworkMode" => "bridge",
+                "PublishAllPorts" => true, "Privileged" => false, "RestartPolicy" => ["name" => "always",], "NetworkMode" => "bridge",
                 "Binds" => [
                     "/var/run/docker.sock:/var/run/docker.sock",
                     "/tmp:/tmp",
                 ],
             ],
         ];
+        if(env('APP_ENV') == 'local') {
+            $image = \App\Models\Image::create([
+                'name' => 'Apache-PHP:latest',
+                'description' => 'server for HTTP, HTTPS, SMTP, POP3, and IMAP
+                                protocols, as well as a load balancer, HTTP cache, and a web
+                                server (origin server).',
+                'fromImage' => 'saucesar/apache',
+                'tag' => 'latest',
+            ]);
 
-        $image = \App\Models\Image::create([
-            'name' => 'Apache-PHP:latest',
-            'description' => 'server for HTTP, HTTPS, SMTP, POP3, and IMAP
-                              protocols, as well as a load balancer, HTTP cache, and a web
-                              server (origin server).',
-            'fromImage' => 'saucesar/apache',
-            'tag' => 'latest',
-        ]);
-
-        $image->imageTemplate()->create([ 'template' => $templateImage ]);
+            $image->imageTemplate()->create([ 'template' => $templateImage ]);
+        }
     }
 }

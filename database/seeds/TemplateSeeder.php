@@ -50,7 +50,7 @@ class TemplateSeeder extends Seeder
             "StdinOnce" => false,
             "Tty" =>true,
             "HostConfig" => [
-                "PublishAllPorts" => true, "Privileged" => true, "RestartPolicy" => ["name" => "always",], "NetworkMode" => "bridge",
+                "PublishAllPorts" => true, "Privileged" => false, "RestartPolicy" => ["name" => "always",], "NetworkMode" => "bridge",
                 "Binds" => [
                     "/var/run/docker.sock:/var/run/docker.sock",
                     "/tmp:/tmp",
