@@ -50,7 +50,7 @@ class ContainersController extends Controller
         }
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         if(!isset($user)){ return redirect()->route('login'); }
@@ -60,7 +60,7 @@ class ContainersController extends Controller
 
         $params = [
             'mycontainers' => $containers,
-            'containerIp' => $this->getIp($containers),
+            'containerIp' => $this->getIp($containers, $request->getHost()),
             'dockerHost' => env('DOCKER_HOST'),
             'dockerHostWs' => env('DOCKER_HOST_WS'),
             'title' => 'My Containers',
@@ -72,7 +72,7 @@ class ContainersController extends Controller
         return view('pages/containers/index', $params);
     }
 
-    private function getIp($containers)
+    private function getIp($containers, string $host)
     {
         $array = [];
         $url = env('DOCKER_HOST');
@@ -80,7 +80,10 @@ class ContainersController extends Controller
         foreach($containers as $container) {
             $info = Http::get("$url/containers/{$container->docker_id}/json");
             if($info->getStatusCode() == 200) {
-                $array[$container->docker_id] = $info->json()['NetworkSettings']['IPAddress'];
+                $infoArray = $info->json();
+                $portKey = array_keys($infoArray['NetworkSettings']['Ports'])[0];
+                $port = $infoArray['NetworkSettings']['Ports'][$portKey][0]['HostPort'];
+                $array[$container->docker_id] = [$infoArray['NetworkSettings']['IPAddress'], "$host:$port"];
             }
         }
 

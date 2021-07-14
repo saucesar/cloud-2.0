@@ -1,4 +1,4 @@
-<table class='table'>
+    <table class='table'>
     <thead>
         <th>#</th>
         <th>Container Id</th>
@@ -19,7 +19,11 @@
             <td><i class="fas fa-server"></i></td>
             <td>{{ substr($container->docker_id, 0, 12) }}</td>
             <td>{{ $container->nickname }}</td>
-            <td>{{ $containerIp[$container->docker_id] }}</td>
+            <td>
+                @foreach($containerIp[$container->docker_id] as $link)
+                <a href="http://{{ $link }}" target="_blank">{{ $link }}</a> |
+                @endforeach
+            </td>
             @if($isAdminArea)
             <td>{{ $container->user()->email }}</td>
             @endif
